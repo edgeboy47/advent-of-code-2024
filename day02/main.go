@@ -12,19 +12,19 @@ func isStrictlyIncreasing(nums []int) bool {
 	if len(nums) == 0 {
 		return false
 	}
-  prev := nums[0]
+	prev := nums[0]
 
-  for i := 1; i < len(nums); i++ {
-    if (nums[i] <= prev) {
-      return false
-    }
+	for i := 1; i < len(nums); i++ {
+		if nums[i] <= prev {
+			return false
+		}
 
-    if (nums[i] - prev > 3) {
-      return false
-    }
+		if nums[i]-prev > 3 {
+			return false
+		}
 
-    prev = nums[i]
-  }
+		prev = nums[i]
+	}
 
 	return true
 }
@@ -34,21 +34,39 @@ func isStrictlyDecreasing(nums []int) bool {
 		return false
 	}
 
-  prev := nums[0]
+	prev := nums[0]
 
-  for i := 1; i < len(nums); i++ {
-    if (nums[i] >= prev) {
-      return false
-    }
+	for i := 1; i < len(nums); i++ {
+		if nums[i] >= prev {
+			return false
+		}
 
-    if (prev - nums[i] > 3) {
-      return false
-    }
+		if prev-nums[i] > 3 {
+			return false
+		}
 
-    prev = nums[i]
-  }
+		prev = nums[i]
+	}
 
 	return true
+}
+
+func problemDampener(nums []int) bool {
+	numsCopy := make([]int, len(nums))
+	copy(numsCopy, nums)
+
+	for i := 0; i < len(nums); i++ {
+		left := nums[:i]
+		right := nums[i+1:]
+		copy := []int{}
+		copy = append(copy, left...)
+		copy = append(copy, right...)
+		if isStrictlyDecreasing(copy) || isStrictlyIncreasing(copy) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func main() {
@@ -77,7 +95,7 @@ func main() {
 			}
 		}
 
-		if isStrictlyIncreasing(vals) || isStrictlyDecreasing(vals) {
+		if isStrictlyIncreasing(vals) || isStrictlyDecreasing(vals) || problemDampener(vals) {
 			numSafe++
 		}
 	}

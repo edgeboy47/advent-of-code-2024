@@ -1,4 +1,5 @@
 package main
+
 import "testing"
 
 func TestIsStrictlyIncreasing(t *testing.T) {
@@ -22,5 +23,15 @@ func TestIsStrictlyDecreasing(t *testing.T) {
 
 	if expected != actual {
 		t.Errorf("Input is not strictly decreasing")
+	}
+}
+
+func TestProblemDampener(t *testing.T) {
+	input := []int{1, 3, 2, 4, 5}
+	expected := true
+	actual := problemDampener(input)
+
+	if expected != actual {
+		t.Errorf("Problem Dampener is not working")
 	}
 }
