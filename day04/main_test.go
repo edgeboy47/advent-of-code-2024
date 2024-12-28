@@ -44,6 +44,29 @@ func TestSearchPosition(t *testing.T) {
 	})
 }
 
+func TestSearchX(t *testing.T) {
+	t.Run("example input", func(t *testing.T) {
+		input := [][]string{
+			{"M", "M", "M", "S", "X", "X", "M", "A", "S", "M"},
+			{"M", "S", "A", "M", "X", "M", "S", "M", "S", "A"},
+			{"A", "M", "X", "S", "X", "M", "A", "A", "M", "M"},
+			{"M", "S", "A", "M", "A", "S", "M", "S", "M", "X"},
+			{"X", "M", "A", "S", "A", "M", "X", "A", "M", "M"},
+			{"X", "X", "A", "M", "M", "X", "X", "A", "M", "A"},
+			{"S", "M", "S", "M", "S", "A", "S", "X", "S", "S"},
+			{"S", "A", "X", "A", "M", "A", "S", "A", "A", "A"},
+			{"M", "A", "M", "M", "M", "X", "M", "M", "M", "M"},
+			{"M", "X", "M", "X", "A", "X", "M", "A", "S", "X"},
+		}
+		expected := true
+		actual := searchX(input, 2, 6)
+
+		if expected != actual {
+			t.Errorf("searchX incorrect")
+		}
+	})
+}
+
 func TestSearchGrid(t *testing.T) {
 	t.Run("grid with word", func(t *testing.T) {
 		input := [][]string{

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -54,18 +55,36 @@ func searchPosition(grid [][]string, row, col int, word string) int {
 	return count
 }
 
+func searchX(grid [][]string, row, col int) bool {
+	rows := len(grid)
+	cols := len(grid[0])
+
+	if grid[row][col] != "A" || row == 0 || col == 0 || row == rows-1 || col == cols-1 {
+		return false
+	}
+
+	topLeft := grid[row-1][col-1]
+	topRight := grid[row-1][col+1]
+	bottomLeft := grid[row+1][col-1]
+	bottomRight := grid[row+1][col+1]
+
+	diag1 := strings.Join([]string{topLeft, "A", bottomRight}, "")
+	diag2 := strings.Join([]string{bottomLeft, "A", topRight}, "")
+	regex, _ := regexp.Compile(`MAS|SAM`)
+
+	return regex.MatchString(diag1) && regex.MatchString(diag2)
+}
+
 func searchGrid(grid [][]string, word string) int {
 	rows := len(grid)
 	cols := len(grid[0])
 	count := 0
-	coords := [][]int{}
 
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
-			found := searchPosition(grid, i, j, word)
-			if found > 0 {
-				count += found
-				coords = append(coords, []int{i, j})
+			found := searchX(grid, i, j)
+			if found {
+				count++
 			}
 		}
 	}
