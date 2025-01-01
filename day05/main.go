@@ -43,8 +43,29 @@ func isUpdateValid(rules Rules, line string) bool {
 			}
 		}
 	}
-
 	return true
+}
+
+func fixUpdate(rules Rules, line string) []int {
+	input := strings.Split(line, ",")
+	vals := []int{}
+
+	for _, val := range input {
+		num, _ := strconv.Atoi(val)
+		vals = append(vals, num)
+	}
+	itemsLength := len(vals)
+
+	for i := 0; i < itemsLength; i++ {
+		for j := i + 1; j < itemsLength; j++ {
+			if !isXBeforeY(rules, vals[i], vals[j]) {
+				temp := vals[i]
+				vals[i] = vals[j]
+				vals[j] = temp
+			}
+		}
+	}
+	return vals
 }
 
 func main() {
@@ -59,7 +80,8 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	total := 0
+	correctUpdatesTotal := 0
+	incorrectUpdatesTotal := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -83,7 +105,22 @@ func main() {
 
 				val, _ := strconv.Atoi(items[index])
 
-				total += val
+				correctUpdatesTotal += val
+			} else {
+				// Fix line and add middle value
+				items := fixUpdate(rules, line)
+				length := len(items)
+				var index int
+
+				if length%2 == 0 {
+					index = length / 2
+				} else {
+					index = (length - 1) / 2
+				}
+
+				val := items[index]
+
+				incorrectUpdatesTotal += val
 			}
 		} else {
 			// Get rules
@@ -99,5 +136,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("middle page count: %d", total)
+  fmt.Printf("correct updates count: %d, incorrect updates count: %d", correctUpdatesTotal, incorrectUpdatesTotal)
 }
