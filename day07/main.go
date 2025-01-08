@@ -11,41 +11,55 @@ import (
 )
 
 type TreeNode struct {
-	leftNode  *TreeNode
-	rightNode *TreeNode
-	val       int
+	leftNode   *TreeNode
+	middleNode *TreeNode
+	rightNode  *TreeNode
+	val        int
 }
 
 func addNode(root *TreeNode, val int) {
 	if root == nil || reflect.DeepEqual(*root, TreeNode{}) {
 		newNode := TreeNode{
-			leftNode:  nil,
-			rightNode: nil,
-			val:       val,
+			leftNode:   nil,
+			middleNode: nil,
+			rightNode:  nil,
+			val:        val,
 		}
 		*root = newNode
 		return
 	}
 
-	if root.leftNode != nil && root.rightNode != nil {
+	if root.leftNode != nil && root.middleNode != nil && root.rightNode != nil {
 		addNode(root.leftNode, val)
+		addNode(root.middleNode, val)
 		addNode(root.rightNode, val)
 		return
 	}
 
+	concatVal, _ := strconv.Atoi(fmt.Sprintf("%d%d", root.val, val))
 	newLeftNode := TreeNode{
-		leftNode:  nil,
-		rightNode: nil,
-		val:       root.val + val,
+		leftNode:   nil,
+		middleNode: nil,
+		rightNode:  nil,
+		val:        root.val + val,
+	}
+
+	newMiddleNode := TreeNode{
+		leftNode:   nil,
+		middleNode: nil,
+		rightNode:  nil,
+		val:        concatVal,
 	}
 
 	newRightNode := TreeNode{
-		leftNode:  nil,
-		rightNode: nil,
-		val:       root.val * val,
+		leftNode:   nil,
+		middleNode: nil,
+		rightNode:  nil,
+		val:        root.val * val,
 	}
 
 	root.leftNode = &newLeftNode
+	root.middleNode = &newMiddleNode
 	root.rightNode = &newRightNode
 
 	return
@@ -60,7 +74,7 @@ func search(root *TreeNode, val int) bool {
 		return true
 	}
 
-	return search(root.leftNode, val) || search(root.rightNode, val)
+	return search(root.leftNode, val) || search(root.middleNode, val) || search(root.rightNode, val)
 }
 
 func main() {
@@ -91,12 +105,11 @@ func main() {
 				addNode(&root, num)
 			}
 
-
-      if search(&root, value) {
-        total += value
-      }
+			if search(&root, value) {
+				total += value
+			}
 		}
 	}
 
-  fmt.Printf("Total calibration result: %d\n", total)
+	fmt.Printf("Total calibration result: %d\n", total)
 }
