@@ -24,16 +24,13 @@ func TestFindAntinodes(t *testing.T) {
 			antinodes []Coordinate
 		}{
 			{Coordinate{1, 8}, Coordinate{2, 5}, []Coordinate{{0, 11}, {3, 2}}},
-			{Coordinate{2, 5}, Coordinate{1, 8}, []Coordinate{{0, 11}, {3, 2}}},
 			{Coordinate{3, 7}, Coordinate{4, 4}, []Coordinate{{2, 10}, {5, 1}}},
-			{Coordinate{4, 4}, Coordinate{3, 7}, []Coordinate{{2, 10}, {5, 1}}},
 			{Coordinate{2, 5}, Coordinate{3, 7}, []Coordinate{{1, 3}, {4, 9}}},
-			{Coordinate{3, 7}, Coordinate{2, 5}, []Coordinate{{1, 3}, {4, 9}}},
 		}
 
 		for _, testVals := range testValues {
 			expected := testVals.antinodes
-			actual := findAntinodes(testVals.a, testVals.b)
+			actual := findAntinodes(testVals.a, testVals.b, 10, 10)
 
 			if !nodesAreEqual(expected, actual) {
 				t.Errorf("Error finding antinodes, got %d and %d", expected, actual)

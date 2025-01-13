@@ -14,17 +14,26 @@ type Coordinate struct {
 	x, y int
 }
 
-func findAntinodes(a, b Coordinate) []Coordinate {
+func findAntinodes(a, b Coordinate, maxRows, maxCols int) []Coordinate {
 	// Takes a pair of coordinates and returns the 2 antinodes
 	antinodes := []Coordinate{}
+	antinodes = append(antinodes, a, b)
 
 	xDistance := a.x - b.x
 	yDistance := a.y - b.y
 
-	nodeA := Coordinate{a.x + xDistance, a.y + yDistance}
-	nodeB := Coordinate{b.x - xDistance, b.y - yDistance}
+	nodeA := Coordinate{a.x, a.y}
+	nodeB := Coordinate{b.x, b.y}
 
-	antinodes = append(antinodes, nodeA, nodeB)
+	for nodeA.x < maxRows && nodeA.x >= 0 && nodeA.y < maxCols && nodeA.y >= 0 {
+		nodeA = Coordinate{nodeA.x + xDistance, nodeA.y + yDistance}
+		antinodes = append(antinodes, nodeA)
+	}
+
+	for nodeB.x < maxRows && nodeB.x >= 0 && nodeB.y < maxCols && nodeB.y >= 0 {
+		nodeB = Coordinate{nodeB.x - xDistance, nodeB.y - yDistance}
+		antinodes = append(antinodes, nodeB)
+	}
 
 	return antinodes
 }
@@ -39,7 +48,7 @@ func countAntinodes(frequencies Frequencies, maxRows, maxCols int) int {
 		for i := 0; i < len(list); i++ {
 			curr := list[i]
 			for j := i + 1; j < len(list); j++ {
-				currAntinodes := findAntinodes(curr, list[j])
+				currAntinodes := findAntinodes(curr, list[j], maxRows, maxCols)
 				for _, node := range currAntinodes {
 					if !slices.Contains(antinodes, node) &&
 						node.x < maxRows && node.x >= 0 &&
