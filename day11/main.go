@@ -17,6 +17,43 @@ func addToMap(input map[int]int, key int) map[int]int {
 	return input
 }
 
+// The cache stores the number of stones returned for a given starting number after n blinks
+func blinkRecursive(input, n int, cache map[string]int) int {
+	if n == 0 {
+		return 1
+	}
+
+	cacheKey := fmt.Sprintf("%d, %d", input, n)
+
+	_, existsInCache := cache[cacheKey]
+
+	if existsInCache {
+		return cache[cacheKey]
+	}
+
+	result := 0
+
+	if input == 0 {
+		result = blinkRecursive(1, n-1, cache)
+	} else if len(fmt.Sprintf("%d", input))%2 == 0 {
+		str := fmt.Sprintf("%d", input)
+		left := str[0 : len(str)/2]
+		right := str[len(str)/2:]
+
+		leftVal, _ := strconv.Atoi(left)
+		rightVal, _ := strconv.Atoi(right)
+
+		result += blinkRecursive(leftVal, n-1, cache)
+		result += blinkRecursive(rightVal, n-1, cache)
+	} else {
+		result = blinkRecursive(input*2024, n-1, cache)
+	}
+
+	cache[cacheKey] = result
+
+	return result
+}
+
 // Store the list as a map, where the key is the number and the value is the count of that number in the list
 func blink(input map[int]int, cache map[int][]int) map[int]int {
 	output := make(map[int]int)
@@ -86,30 +123,34 @@ func main() {
 		}
 	}
 
-	cache := make(map[int][]int)
+	cache := make(map[string]int)
 
 	final := 0
 
 	// Do each number from the input individually
+	// for _, val := range input {
+	// 	valueInput := map[int]int{
+	// 		val: 1,
+	// 	}
+	//
+	// 	for i := range 75 {
+	// 		valueLength := 0
+	// 		valueInput = blink(valueInput, cache)
+	//
+	// 		for _, val := range valueInput {
+	// 			valueLength += val
+	// 		}
+	//
+	// 		fmt.Printf("Input %d length: %d\n", i, valueLength)
+	// 	}
+	// 	for _, val := range valueInput {
+	// 		final += val
+	// 	}
+	// }
+
 	for _, val := range input {
-		valueInput := map[int]int{
-			val: 1,
-		}
-
-		for i := range 75 {
-			valueLength := 0
-			valueInput = blink(valueInput, cache)
-
-			for _, val := range valueInput {
-				valueLength += val
-			}
-
-			fmt.Printf("Input %d length: %d\n", i, valueLength)
-		}
-		for _, val := range valueInput {
-			final += val
-		}
+		fmt.Println(val)
+		final += blinkRecursive(val, 75, cache)
 	}
-
-	fmt.Printf("Length after 25 runs: %d", final)
+	fmt.Printf("Length after 75 runs: %d", final)
 }
