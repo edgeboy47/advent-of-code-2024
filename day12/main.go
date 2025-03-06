@@ -9,7 +9,11 @@ import (
 )
 
 type Point struct {
-	row, col int
+	row, col float32
+}
+
+type Corner struct {
+	row, col float32
 }
 
 type Region map[Point]int
@@ -64,6 +68,38 @@ func (g *Garden) perimeter(region int) int {
 	return total
 }
 
+// Finds the number of sides by checking the corners of each point in the region
+func (g *Garden) sides(region int) int {
+	sides := 0
+	points := g.garden[region]
+	corners := make(map[Corner][]Point)
+	cornerpoints := []Corner{{0.5, 0.5}, {0.5, -0.5}, {-0.5, 0.5}, {-0.5, -0.5}}
+
+	// Find all the corners for each point
+	// Map each corner to all the points it belongs to
+	for _, point := range points {
+		for _, c := range cornerpoints {
+			corner := Corner{float32(point.row) + c.row, float32(point.col) + c.col}
+			corners[corner] = append(corners[corner], point)
+		}
+	}
+
+	// If a corner belongs to either 1 or 3 points, it is a unique side
+	for _, p := range corners {
+		if len(p) == 1 || len(p) == 3 {
+			sides += 1
+		} else if len(p) == 2 {
+			// If a corner belongs to 2 points, and the points are diagonal to each other then it is 2 sides
+			c1 := p[0]
+			c2 := p[1]
+			if c1.row != c2.row && c1.col != c2.col {
+				sides += 2
+			}
+		}
+	}
+	return sides
+}
+
 // Find connected components using dfs
 func dfs(board [][]string, visited map[Point]int, point Point, key string, region int) {
 	_, seen := visited[point]
@@ -71,12 +107,12 @@ func dfs(board [][]string, visited map[Point]int, point Point, key string, regio
 		return
 	}
 
-	if point.row < 0 || point.row >= len(board) || point.col < 0 || point.col >= len(board[0]) {
+	if point.row < 0 || int(point.row) >= len(board) || point.col < 0 || int(point.col) >= len(board[0]) {
 		return
 	}
 
 	// If the current point on the board has the passed in key, then it is in the same region
-	if board[point.row][point.col] == key {
+	if board[int(point.row)][int(point.col)] == key {
 		visited[point] = region
 
 		adjacent := []Point{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
@@ -95,7 +131,7 @@ func findRegions(board [][]string) Region {
 
 	for row, line := range board {
 		for col, key := range line {
-			point := Point{row, col}
+			point := Point{float32(row), float32(col)}
 			_, seen := regions[point]
 			if !seen {
 				dfs(board, regions, point, key, region)
@@ -137,10 +173,13 @@ func main() {
 	}
 
 	total := 0
+	total2 := 0
 	for key := range g.garden {
 		area := g.area(key)
 		perimeter := g.perimeter(key)
+		sides := g.sides(key)
 		total += area * perimeter
+		total2 += area * sides
 	}
-	fmt.Printf("Total Score: %d\n", total)
+	fmt.Printf("Total Score: %d\n Sides total: %d\n", total, total2)
 }
